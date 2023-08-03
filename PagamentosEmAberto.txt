@@ -1,0 +1,4 @@
+00PAGAMENTOS EM ABERTO          2023-07-28 19:01:3301
+02Cldron Distribuidora de Alimentos LTDA            133365490001641744 142185              113336549000164                          1784,36   
+02Dandeirantes Comércio de Embalagens               214951854115452013 2001                2financeiro@bandembal.com.br             143,89    
+01000052028,25      
