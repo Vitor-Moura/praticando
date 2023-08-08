@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  app:
+    image: vitormourati/praticando:v1
+    container_name: container_praticando
+    ports:
+      - "8080:8080"
+

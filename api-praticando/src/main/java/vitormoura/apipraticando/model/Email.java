@@ -11,9 +11,8 @@ public class Email {
     private String cc;
     private String assunto;
     private String corpo;
-    private String caminhoDoArquivo;
-
-    private String nomeDoArquivo;
+    private String caminhoDoAnexo;
+    private String nomeDoAnexo;
     private boolean isHtmlMsg;
 
 
@@ -49,20 +48,20 @@ public class Email {
         this.corpo = corpo;
     }
 
-    public String getCaminhoDoArquivo() {
-        return caminhoDoArquivo;
+    public String getCaminhoDoAnexo() {
+        return caminhoDoAnexo;
     }
 
-    public void setCaminhoDoArquivo(String caminhoDoArquivo) {
-        this.caminhoDoArquivo = caminhoDoArquivo;
+    public void setCaminhoDoAnexo(String caminhoDoAnexo) {
+        this.caminhoDoAnexo = caminhoDoAnexo;
     }
 
-    public String getNomeDoArquivo() {
-        return nomeDoArquivo;
+    public String getNomeDoAnexo() {
+        return nomeDoAnexo;
     }
 
-    public void setNomeDoArquivo(String nomeDoArquivo) {
-        this.nomeDoArquivo = nomeDoArquivo;
+    public void setNomeDoAnexo(String nomeDoAnexo) {
+        this.nomeDoAnexo = nomeDoAnexo;
     }
 
     public boolean isHtmlMsg() {

@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface PagamentoRepository extends JpaRepository<Pagamento, Integer> {
 
-    List<Pagamento> findByStatusPagamentoTrue();
-
+    List<Pagamento> findByDataHoraPagamentoNotNull();
 }
