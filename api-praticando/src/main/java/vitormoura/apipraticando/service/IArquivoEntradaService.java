@@ -1,4 +1,4 @@
-package vitormoura.apipraticando.service.Interface;
+package vitormoura.apipraticando.service;
 
 import org.springframework.web.multipart.MultipartFile;
 

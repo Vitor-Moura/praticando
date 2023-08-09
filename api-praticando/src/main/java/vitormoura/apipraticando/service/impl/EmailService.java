@@ -1,4 +1,4 @@
-package vitormoura.apipraticando.service;
+package vitormoura.apipraticando.service.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -9,8 +9,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import vitormoura.apipraticando.model.Email;
-import vitormoura.apipraticando.service.Interface.IEmailService;
+import vitormoura.apipraticando.service.models.Email;
+import vitormoura.apipraticando.service.IEmailService;
 import java.io.File;
 
 @Service
@@ -25,6 +25,7 @@ public class EmailService implements IEmailService {
     public boolean enviaEmail(Email email) {
         LOGGER.info("Iníciando envio do e-mail");
         MimeMessage mimeMessage = mailSender.createMimeMessage();
+        LOGGER.info("mimeMessage criada");
         try {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
             messageHelper.setTo(email.getPara());
@@ -39,6 +40,9 @@ public class EmailService implements IEmailService {
 
             FileSystemResource file = new FileSystemResource(new File(email.getCaminhoDoAnexo()));
             messageHelper.addAttachment(email.getNomeDoAnexo(), file);
+
+            LOGGER.info("O caminho do anexo é: " + email.getCaminhoDoAnexo());
+            LOGGER.info("O nome do anexo é: " + email.getNomeDoAnexo());
 
             mailSender.send(mimeMessage);
             LOGGER.info("Email enviado com sucesso");

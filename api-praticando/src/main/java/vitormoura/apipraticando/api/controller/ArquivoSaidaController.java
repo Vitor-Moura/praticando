@@ -1,4 +1,4 @@
-package vitormoura.apipraticando.controller;
+package vitormoura.apipraticando.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vitormoura.apipraticando.model.enums.TipoDeArquivo;
-import vitormoura.apipraticando.service.Interface.IArquivoSaidaService;
+import vitormoura.apipraticando.domain.enums.TipoDeArquivo;
+import vitormoura.apipraticando.service.IArquivoSaidaService;
 
 @RestController
 @RequestMapping("/relatorios")

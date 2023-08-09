@@ -1,16 +1,17 @@
-package vitormoura.apipraticando.service;
+package vitormoura.apipraticando.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import vitormoura.apipraticando.model.DiscoLocal;
-import vitormoura.apipraticando.model.Pagamento;
-import vitormoura.apipraticando.model.enums.TipoDeArquivo;
-import vitormoura.apipraticando.model.repository.PagamentoRepository;
-import vitormoura.apipraticando.service.Interface.IArquivoEntradaService;
-import vitormoura.apipraticando.service.Interface.IDiscoLocalService;
+import org.webjars.NotFoundException;
+import vitormoura.apipraticando.service.models.DiscoLocal;
+import vitormoura.apipraticando.domain.entities.Pagamento;
+import vitormoura.apipraticando.domain.enums.TipoDeArquivo;
+import vitormoura.apipraticando.domain.repository.PagamentoRepository;
+import vitormoura.apipraticando.service.IArquivoEntradaService;
+import vitormoura.apipraticando.service.IDiscoLocalService;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -45,16 +46,17 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
             LOGGER.info("Upload do arquivo " + arquivo.getOriginalFilename() + " realizado com sucesso");
             return true;
         }
-        catch (Exception e) {
+        catch (IOException | NotFoundException e) {
             LOGGER.error("Erro ao salvar o arquivo no disco local" + e.getMessage());
+            //throw new uploadException("oshgosjhg");
             return false;
         }
     }
 
     @Override
     public boolean leArquivoPagamentosEmAberto(String nomeArquivo) {
-        String caminhoArquivo = TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorioRaiz() + "\\"
-                + TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorio() + "\\" + nomeArquivo;
+        String caminhoArquivo = TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorioRaiz() + "/"
+                + TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorio() + "/" + nomeArquivo;
 
         BufferedReader entrada = null;
         String registro, tiporegistro, nomeCred, chavePix, digitoContaCred;

@@ -1,4 +1,4 @@
-package vitormoura.apipraticando;
+package vitormoura.apipraticando.api.documentation;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

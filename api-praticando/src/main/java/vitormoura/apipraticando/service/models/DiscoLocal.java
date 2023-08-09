@@ -1,4 +1,4 @@
-package vitormoura.apipraticando.model;
+package vitormoura.apipraticando.service.models;
 
 public class DiscoLocal {
 

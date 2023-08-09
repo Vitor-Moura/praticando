@@ -1,18 +1,18 @@
-package vitormoura.apipraticando.service;
+package vitormoura.apipraticando.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
-import vitormoura.apipraticando.model.DiscoLocal;
-import vitormoura.apipraticando.model.enums.TipoDeArquivo;
-import vitormoura.apipraticando.model.Email;
-import vitormoura.apipraticando.model.Pagamento;
-import vitormoura.apipraticando.model.repository.PagamentoRepository;
-import vitormoura.apipraticando.service.Interface.IDiscoLocalService;
-import vitormoura.apipraticando.service.Interface.IEmailService;
-import vitormoura.apipraticando.service.Interface.IArquivoSaidaService;
+import vitormoura.apipraticando.service.models.DiscoLocal;
+import vitormoura.apipraticando.domain.enums.TipoDeArquivo;
+import vitormoura.apipraticando.service.models.Email;
+import vitormoura.apipraticando.domain.entities.Pagamento;
+import vitormoura.apipraticando.domain.repository.PagamentoRepository;
+import vitormoura.apipraticando.service.IDiscoLocalService;
+import vitormoura.apipraticando.service.IEmailService;
+import vitormoura.apipraticando.service.IArquivoSaidaService;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.*;
@@ -72,7 +72,7 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
         //abrindo arquivo
         LOGGER.info("Iniciando a abertura do arquivo");
         try {
-            arq = new FileWriter(caminhoDiretorio + "\\" + nomeCompletoArquivo);
+            arq = new FileWriter(caminhoDiretorio + "/" + nomeCompletoArquivo);
             saida = new Formatter(arq);
         }
         catch (IOException e) {
@@ -106,7 +106,7 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
             saida.close();
             try {
                 arq.close();
-                LOGGER.info(nomeCompletoArquivo + " gravado com sucesso");
+                LOGGER.info(nomeCompletoArquivo + " gravado com sucesso em " + caminhoDiretorio);
                 return true;
             }
             catch (IOException e) {
@@ -119,15 +119,16 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
 
     @Override
     public boolean enviarRelatorioPagamentosEfetuados(String enderecoEnvio) {
-        String caminhoDiretorio = TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorioRaiz() + "\\"
+        String caminhoDiretorio = TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorioRaiz() + "/"
                                 + TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorio();
 
-        LOGGER.info("Criando o email a ser enviado");
+
+        LOGGER.info("Criando o email a ser enviado no caminho: " + caminhoDiretorio);
         Email email = new Email();
         email.setPara(enderecoEnvio);
         email.setAssunto(nomeCompletoArquivo);
         email.setCorpo("Segue em anexo o relatório com todos os pagamentos efetuados");
-        email.setCaminhoDoAnexo(caminhoDiretorio + "\\" + nomeCompletoArquivo);
+        email.setCaminhoDoAnexo(caminhoDiretorio + "/" + nomeCompletoArquivo);
         email.setNomeDoAnexo(nomeCompletoArquivo);
         email.setHtmlMsg(false);
 

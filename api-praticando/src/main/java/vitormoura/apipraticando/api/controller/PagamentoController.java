@@ -1,11 +1,11 @@
-package vitormoura.apipraticando.controller;
+package vitormoura.apipraticando.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vitormoura.apipraticando.model.Pagamento;
-import vitormoura.apipraticando.model.repository.PagamentoRepository;
+import vitormoura.apipraticando.domain.entities.Pagamento;
+import vitormoura.apipraticando.domain.repository.PagamentoRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

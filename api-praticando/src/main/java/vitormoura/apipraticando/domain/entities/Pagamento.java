@@ -1,4 +1,4 @@
-package vitormoura.apipraticando.model;
+package vitormoura.apipraticando.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

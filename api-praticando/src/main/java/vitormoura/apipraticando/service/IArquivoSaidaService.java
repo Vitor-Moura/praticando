@@ -1,4 +1,4 @@
-package vitormoura.apipraticando.service.Interface;
+package vitormoura.apipraticando.service;
 
 public interface IArquivoSaidaService {
 

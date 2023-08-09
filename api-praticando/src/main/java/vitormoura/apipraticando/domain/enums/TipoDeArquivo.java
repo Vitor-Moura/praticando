@@ -1,8 +1,8 @@
-package vitormoura.apipraticando.model.enums;
+package vitormoura.apipraticando.domain.enums;
 
 public enum TipoDeArquivo {
-    PAGAMENTOS_PENDENTES("C:/home", "Pagamentos Pendentes", "Pagamentos_Pendentes", ".txt"),
-    PAGAMENTOS_EFETUADOS("C:/home", "Pagamentos Efetuados", "Pagamentos_Efetuados", ".csv");
+    PAGAMENTOS_PENDENTES("/home", "Pagamentos Pendentes", "Pagamentos_Pendentes", ".txt"),
+    PAGAMENTOS_EFETUADOS("/home", "Pagamentos Efetuados", "Pagamentos_Efetuados", ".csv");
 
     public final String diretorioRaiz;
     public final String diretorio;

@@ -1,7 +1,7 @@
-package vitormoura.apipraticando.model.repository;
+package vitormoura.apipraticando.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import vitormoura.apipraticando.model.Pagamento;
+import vitormoura.apipraticando.domain.entities.Pagamento;
 
 import java.util.List;
 
