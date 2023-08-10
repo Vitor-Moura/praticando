@@ -21,29 +21,17 @@ public class DiscoLocalService implements IDiscoLocalService {
         LOGGER.info("Iniciando a criação do diretório");
 
             Path caminhoDoDiretorio = Paths.get(discoLocal.getDiretorioRaiz(), discoLocal.getDiretorioDoArquivo());
+            LOGGER.info("Caminho do diretorio antes de criar: " + caminhoDoDiretorio);
 
-            LOGGER.info("Caminho di diretorio antes de criar: " + caminhoDoDiretorio);
+            Files.createDirectories(caminhoDoDiretorio);
 
-
-                Files.createDirectories(caminhoDoDiretorio);
-
-
-
-            LOGGER.info("Diretório craido com sucesso em: " + caminhoDoDiretorio);
+            LOGGER.info("Diretório criado com sucesso em: " + caminhoDoDiretorio);
             return caminhoDoDiretorio;
     }
 
-    public boolean salvarNoDiscoLocal(MultipartFile arquivo, Path caminhoDoDiretorio){
+    public void salvarNoDiscoLocal(MultipartFile arquivo, Path caminhoDoDiretorio) throws IOException {
         Path caminhoDoArquivo = caminhoDoDiretorio.resolve(arquivo.getOriginalFilename());
-
-        try {
             arquivo.transferTo(caminhoDoArquivo.toFile());
             LOGGER.info("Arquivo salvo com sucesso em " + String.valueOf(caminhoDoArquivo));
-            return true;
-        }
-        catch (IOException e) {
-            LOGGER.error("Erro ao salvar o arquivo");
-            return false;
-        }
     }
 }

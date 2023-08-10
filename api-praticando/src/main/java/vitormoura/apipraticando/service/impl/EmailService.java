@@ -22,34 +22,25 @@ public class EmailService implements IEmailService {
     private JavaMailSender mailSender;
 
     @Override
-    public boolean enviaEmail(Email email) {
+    public void enviaEmail(Email email) throws MessagingException {
         LOGGER.info("Iníciando envio do e-mail");
+
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        LOGGER.info("mimeMessage criada");
-        try {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
-            messageHelper.setTo(email.getPara());
-            messageHelper.setSubject(email.getAssunto());
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
+        messageHelper.setTo(email.getPara());
+        messageHelper.setSubject(email.getAssunto());
 
-            if (email.isHtmlMsg()) {
-                //para mensagens de texto baseadas em html, definir flag como true
-                messageHelper.setText(email.getCorpo(), true);
-            } else {
-                messageHelper.setText(email.getCorpo());
-            }
-
-            FileSystemResource file = new FileSystemResource(new File(email.getCaminhoDoAnexo()));
-            messageHelper.addAttachment(email.getNomeDoAnexo(), file);
-
-            LOGGER.info("O caminho do anexo é: " + email.getCaminhoDoAnexo());
-            LOGGER.info("O nome do anexo é: " + email.getNomeDoAnexo());
-
-            mailSender.send(mimeMessage);
-            LOGGER.info("Email enviado com sucesso");
-            return true;
-        } catch (MessagingException e) {
-            LOGGER.error("Erro ao enviar email: " + e.getMessage());
-            return false;
+        if (email.isHtmlMsg()) {
+            //para mensagens de texto baseadas em html, definir flag como true
+            messageHelper.setText(email.getCorpo(), true);
+        } else {
+            messageHelper.setText(email.getCorpo());
         }
+
+        FileSystemResource file = new FileSystemResource(new File(email.getCaminhoDoAnexo()));
+        messageHelper.addAttachment(email.getNomeDoAnexo(), file);
+
+        mailSender.send(mimeMessage);
+        LOGGER.info("Email enviado com sucesso");
     }
 }

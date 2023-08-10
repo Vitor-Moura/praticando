@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.webjars.NotFoundException;
+import vitormoura.apipraticando.service.exception.LerArquivoException;
+import vitormoura.apipraticando.service.exception.SalvarRegistrosException;
+import vitormoura.apipraticando.service.exception.UpdaloadArquivoException;
 import vitormoura.apipraticando.service.models.DiscoLocal;
 import vitormoura.apipraticando.domain.entities.Pagamento;
 import vitormoura.apipraticando.domain.enums.TipoDeArquivo;
@@ -30,8 +32,17 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
     PagamentoRepository pagamentoRepository;
     private List<Pagamento> listaPagamentosEmAberto;
 
+    @Override
+    public void processarArquivoPagamentosPendentes (MultipartFile arquivo) {
+        String nomeArquivo = arquivo.getOriginalFilename();
 
-    public boolean uploadArquivoPagamentosPendentes(MultipartFile arquivo){
+            uploadArquivoPagamentosPendentes(arquivo);
+            leArquivoPagamentosPendentes(nomeArquivo);
+            salvarRegistrosPagamentosPendentes(nomeArquivo);
+    }
+
+
+    private void uploadArquivoPagamentosPendentes(MultipartFile arquivo) {
         LOGGER.info("Iniciando o upload do arquivo " + arquivo.getOriginalFilename());
 
         DiscoLocal discoLocal = new DiscoLocal(
@@ -44,17 +55,16 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
             iDiscoLocalService.salvarNoDiscoLocal(arquivo, caminhoDoArquivo);
 
             LOGGER.info("Upload do arquivo " + arquivo.getOriginalFilename() + " realizado com sucesso");
-            return true;
         }
-        catch (IOException | NotFoundException e) {
-            LOGGER.error("Erro ao salvar o arquivo no disco local" + e.getMessage());
-            //throw new uploadException("oshgosjhg");
-            return false;
+        catch (IOException e) {
+            LOGGER.error(getClass() + " ==> Método: uploadArquivoPagamentosPendentes" );
+            throw new UpdaloadArquivoException("Nome do arquivo: " + arquivo.getOriginalFilename() + " ==> "
+                    + e.getMessage());
         }
     }
 
-    @Override
-    public boolean leArquivoPagamentosEmAberto(String nomeArquivo) {
+
+    private void leArquivoPagamentosPendentes(String nomeArquivo) {
         String caminhoArquivo = TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorioRaiz() + "/"
                 + TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorio() + "/" + nomeArquivo;
 
@@ -72,8 +82,8 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
             LOGGER.info("Inciando a abertura do arquivo " + nomeArquivo);
         }
         catch (IOException e) {
-            LOGGER.error("Erro ao abrir o arquivo " + nomeArquivo + " " + e.getMessage());
-            return false;
+            LOGGER.error(getClass() + " ==> Método: leArquivoPagamentosPendentes" );
+            throw new LerArquivoException("Erro ao abrir o arquivo " + nomeArquivo + " ==> " + e.getMessage());
         }
 
         //lendo arquivo
@@ -89,7 +99,7 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
                     LOGGER.info("Tipo de arquivo: " + registro.substring(2,32).trim() + " - Data/hora da geração do arquivo:" +
                             " " + registro.substring(32,51));
                 } else if (tiporegistro.equals("02")) {
-                    LOGGER.debug("Iniciando leitura do registro");
+                    LOGGER.info("Iniciando leitura do registro");
                     nomeCred = registro.substring(2,52).trim();
                     cnpjCpfCred = Long.valueOf(registro.substring(52,66).trim());
                     agenciaCred = Integer.valueOf(registro.substring(66,71).trim());
@@ -118,31 +128,28 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
                     if (qtdRegistroArquivo != contadorRegistroLido) {
                         LOGGER.error("Quantidade de registros informado no trailer do arquivo é incompatível " +
                                 "com a quantidade de registros lidos");
-                        return false;
                     }
                     if (valorTotalArquivo != valorTotalLido) {
                         LOGGER.error("Valor total informado no trailer é incompatível " +
                                 "com o valor total calculado na leitura do arquivo");
-                        return false;
                     }
                 }
                 else {
-                    LOGGER.error("Tipo de registro inválido");
-                    return false;
+                    LOGGER.error(getClass() + " ==> Método: leArquivoPagamentosPendentes");
+                    throw new LerArquivoException("Tipo de registro inválido no arquivo: " + nomeArquivo);
                 }
                 registro = entrada.readLine();
             }
             entrada.close();
             LOGGER.info("Arquivo válido. Registros lidos com sucesso");
-            return true;
         }
         catch (IOException e) {
-            LOGGER.error("Erro ao ler o arquivo Pagamentos em Aberto" + e.getMessage());
-            return false;
+            LOGGER.error(getClass() + " ==> Método: leArquivoPagamentosPendentes" );
+            throw new LerArquivoException("Nome do arquivo: " + nomeArquivo + " ==> " + e.getMessage());
         }
     }
-    @Override
-    public boolean salvarRegistrosPagamentosEmAberto (String nomeArquivo) {
+
+    private void salvarRegistrosPagamentosPendentes(String nomeArquivo) {
         LOGGER.info("Iniciando a inserção dos registros no banco de dados");
 
         try {
@@ -152,12 +159,9 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
             LOGGER.info("Registros inseridos com sucesso no banco de dados");
         }
         catch (Exception e) {
-            LOGGER.error("Erro ao inserir os registros do arquivo Pagamentos em Aberto no banco de dados " + e.getMessage());
+            LOGGER.error(getClass() + " ==> Método: salvarRegistrosPagamentosPendentes" );
+            throw new SalvarRegistrosException("Erro ao inserir no banco de dados os registros do arquivo: "
+                    + nomeArquivo + " ==> " + e.getMessage());
         }
-
-       return listaPagamentosEmAberto.isEmpty()
-               ? false
-               : true;
    }
-
 }

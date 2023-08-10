@@ -8,7 +8,7 @@ import java.nio.file.Path;
 
 public interface IDiscoLocalService {
 
-    public boolean salvarNoDiscoLocal(MultipartFile arquivo, Path caminhoDoDiretorio);
+    public void salvarNoDiscoLocal(MultipartFile arquivo, Path caminhoDoDiretorio) throws IOException;
 
     public Path criarDiretorio(DiscoLocal discoLocal) throws IOException;
 }

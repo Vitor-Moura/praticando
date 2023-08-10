@@ -23,25 +23,11 @@ public class ArquivoEntradaController {
 
     @PostMapping("/processarArquivoEntrada")
     public ResponseEntity<String> processarArquivoEntrada(@RequestParam MultipartFile arquivo)  {
-
         String nomeArquivo = arquivo.getOriginalFilename();
 
         if (nomeArquivo.substring(0,20).equalsIgnoreCase(TipoDeArquivo.PAGAMENTOS_PENDENTES.getNome())) {
-            //UPLOAD
-            if (!iArquivoEntradaService.uploadArquivoPagamentosPendentes(arquivo)) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error " +
-                        "ao fazer o upload do arquivo " + nomeArquivo);
-            }
-            //LEITURA
-            if (!iArquivoEntradaService.leArquivoPagamentosEmAberto(nomeArquivo)) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error " +
-                        "ao ler o arquivo" + nomeArquivo);
-            }
-            //SALVAR REGISTROS
-            if (!iArquivoEntradaService.salvarRegistrosPagamentosEmAberto(nomeArquivo)) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro " +
-                        "ao salvar os registros do arquivo " + nomeArquivo + " no banco de dados.");
-            }
+            //TipoDeArquivo.PAGAMENTOS_PENDENTES.processarPagamentosPendentes(arquivo);
+            iArquivoEntradaService.processarArquivoPagamentosPendentes(arquivo);
             return ResponseEntity.ok("Arquivo " + nomeArquivo + " processado. Dados gravados no banco de dados.");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Arquivo inválido");

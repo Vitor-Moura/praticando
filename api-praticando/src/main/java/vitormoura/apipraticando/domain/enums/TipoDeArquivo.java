@@ -1,8 +1,22 @@
 package vitormoura.apipraticando.domain.enums;
 
+import org.springframework.web.multipart.MultipartFile;
+import vitormoura.apipraticando.service.IArquivoEntradaService;
+
+
 public enum TipoDeArquivo {
-    PAGAMENTOS_PENDENTES("/home", "Pagamentos Pendentes", "Pagamentos_Pendentes", ".txt"),
-    PAGAMENTOS_EFETUADOS("/home", "Pagamentos Efetuados", "Pagamentos_Efetuados", ".csv");
+
+    PAGAMENTOS_PENDENTES("C:/home", "Pagamentos Pendentes", "Pagamentos_Pendentes", ".txt") {
+
+        private IArquivoEntradaService iArquivoEntradaService;
+        @Override
+        public void processarPagamentosPendentes(MultipartFile arquivo) {
+            iArquivoEntradaService.processarArquivoPagamentosPendentes(arquivo);
+        }
+    },
+    PAGAMENTOS_EFETUADOS("C:/home", "Pagamentos Efetuados", "Pagamentos_Efetuados", ".csv") {
+
+    };
 
     public final String diretorioRaiz;
     public final String diretorio;
@@ -15,6 +29,9 @@ public enum TipoDeArquivo {
         this.diretorio = diretorio;
         this.nome = nome;
         this.extensao = extensao;
+    }
+
+    public void processarPagamentosPendentes(MultipartFile arquivo) {
     }
 
     public String getDiretorioRaiz() {

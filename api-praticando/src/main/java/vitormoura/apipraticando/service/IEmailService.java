@@ -1,9 +1,10 @@
 package vitormoura.apipraticando.service;
 
+import jakarta.mail.MessagingException;
 import vitormoura.apipraticando.service.models.Email;
 
 public interface IEmailService {
 
-    boolean enviaEmail(Email email);
+    void enviaEmail(Email email) throws MessagingException;
 
 }

@@ -1,13 +1,12 @@
 package vitormoura.apipraticando.service;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import vitormoura.apipraticando.service.exception.UpdaloadArquivoException;
 
+@Component
 public interface IArquivoEntradaService {
 
-    public boolean leArquivoPagamentosEmAberto(String nomeArquivo);
-
-    public boolean uploadArquivoPagamentosPendentes(MultipartFile arquivo);
-
-    public boolean salvarRegistrosPagamentosEmAberto(String nomeArquivo);
+    public void processarArquivoPagamentosPendentes (MultipartFile arquivo);
 
 }

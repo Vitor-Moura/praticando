@@ -1,10 +1,13 @@
 package vitormoura.apipraticando.service.impl;
 
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
+import vitormoura.apipraticando.service.exception.EmailException;
+import vitormoura.apipraticando.service.exception.GerarRelatorioException;
 import vitormoura.apipraticando.service.models.DiscoLocal;
 import vitormoura.apipraticando.domain.enums.TipoDeArquivo;
 import vitormoura.apipraticando.service.models.Email;
@@ -38,26 +41,39 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
     @Autowired
     IDiscoLocalService iDiscoLocalService;
 
+    public void processarRelatorioPagamentosEfetuados(String enderecoEnvio) {
+        gerarRelatorioPagamentosEfetuados();
+        try {
+            enviarRelatorioPagamentosEfetuados(enderecoEnvio);
+        } catch (EmailException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    @Override
-    public boolean gerarRelatorioPagamentosEfetuados() {
+
+
+    private void gerarRelatorioPagamentosEfetuados() {
         LOGGER.info("Inciando a busca por pagamentos efetuados no banco de dados");
 
         List<Pagamento> listaPagamentosEfetuados = new ArrayList<>();
-        try {
-            listaPagamentosEfetuados = pagamentoRepository.findByDataHoraPagamentoNotNull();
-            if (listaPagamentosEfetuados.isEmpty()) {
-                throw new NotFoundException("Não existem registros de pagamentos efetuados");
-            }
-        }
-        catch (Exception e) {
-            LOGGER.error("Erro ao buscar dados de pagamentos efetuados no banco de dados");
-            return false;
+
+        listaPagamentosEfetuados = pagamentoRepository.findByDataHoraPagamentoNotNull();
+
+
+        if (listaPagamentosEfetuados.isEmpty()) {
+            throw new NotFoundException("Não existem registros de pagamentos efetuados");
         }
 
         DiscoLocal discoLocal = new DiscoLocal(TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorioRaiz(),
                                 TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorio());
-        String caminhoDiretorio = String.valueOf(iDiscoLocalService.criarDiretorio(discoLocal));
+
+        String caminhoDiretorio = null;
+        try {
+            caminhoDiretorio = String.valueOf(iDiscoLocalService.criarDiretorio(discoLocal));
+        } catch (IOException e) {
+            LOGGER.error(getClass() + " ==> Método: gerarRelatorioPagamentosEfetuados" );
+            throw new GerarRelatorioException("Erro ao criar diretório " + e.getMessage());
+        }
 
         Instant instant = Instant.now();
         LocalDateTime localDate = LocalDateTime.ofInstant(instant, ZoneOffset.of("-03:00"));
@@ -76,9 +92,9 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
             saida = new Formatter(arq);
         }
         catch (IOException e) {
-            LOGGER.error(("Erro ao abrir o arquivo" + e.getMessage()));
-            e.printStackTrace();
-            return false;
+            LOGGER.error(getClass() + " ==> Método: gerarRelatorioPagamentosEfetuados" );
+            throw new GerarRelatorioException("Erro ao abrir o arquivo: "
+                    + nomeCompletoArquivo + " ==> " + e.getMessage());
         }
 
         //gravando arquivo
@@ -98,30 +114,29 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
             }
         }
         catch (FormatterClosedException e) {
-            LOGGER.error("Erro ao gravar o " + nomeCompletoArquivo + " " + e.getMessage());
-            e.printStackTrace();
-            return false;
+            LOGGER.error(getClass() + " ==> Método: gerarRelatorioPagamentosEfetuados" );
+            throw new GerarRelatorioException("Erro ao gravar o arquivo: "
+                    + nomeCompletoArquivo + " ==> " + e.getMessage());
+
         }
         finally {
             saida.close();
             try {
                 arq.close();
                 LOGGER.info(nomeCompletoArquivo + " gravado com sucesso em " + caminhoDiretorio);
-                return true;
             }
             catch (IOException e) {
-                LOGGER.error("Erro ao fechar o arquivo" + nomeCompletoArquivo + " " + e.getMessage());
-                e.printStackTrace();
-                return false;
+                LOGGER.error(getClass() + " ==> Método: gerarRelatorioPagamentosEfetuados" );
+                throw new GerarRelatorioException("Erro ao fechar o arquivo: "
+                        + nomeCompletoArquivo + " ==> " + e.getMessage());
             }
         }
     }
 
-    @Override
-    public boolean enviarRelatorioPagamentosEfetuados(String enderecoEnvio) {
+
+    public void enviarRelatorioPagamentosEfetuados(String enderecoEnvio) throws EmailException {
         String caminhoDiretorio = TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorioRaiz() + "/"
                                 + TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorio();
-
 
         LOGGER.info("Criando o email a ser enviado no caminho: " + caminhoDiretorio);
         Email email = new Email();
@@ -132,8 +147,13 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
         email.setNomeDoAnexo(nomeCompletoArquivo);
         email.setHtmlMsg(false);
 
-        return iEmailService.enviaEmail(email)
-                ? true
-                : false;
+        try {
+            iEmailService.enviaEmail(email);
+        }
+        catch (MessagingException e) {
+            LOGGER.error(getClass() + " ==> Método: enviarRelatorioPagamentosEfetuados" );
+            throw new EmailException("Erro ao enviar emial com o relatório: "
+                    + nomeCompletoArquivo + " ==> " + e.getMessage());
+        }
     }
 }
