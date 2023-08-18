@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vitormoura.apipraticando.domain.enums.TipoDeArquivo;
+import vitormoura.apipraticando.domain.enums.TipoDeArquivoEntrada;
 import vitormoura.apipraticando.service.IArquivoSaidaService;
 
 @RestController
@@ -18,7 +18,7 @@ public class ArquivoSaidaController {
     @GetMapping("/processarRelatorio")
     public ResponseEntity<String> processarRelatorio(String tipo, String enderecoEnvio) {
 
-        if (tipo.equalsIgnoreCase(TipoDeArquivo.PAGAMENTOS_EFETUADOS.getNome())) {
+        if (tipo.equalsIgnoreCase(TipoDeArquivoEntrada.PAGAMENTOS_EFETUADOS.getNome())) {
             iArquivoSaidaService.processarRelatorioPagamentosEfetuados(enderecoEnvio);
             return ResponseEntity.ok("Relatório gerado e enviado via e-mail");
         }

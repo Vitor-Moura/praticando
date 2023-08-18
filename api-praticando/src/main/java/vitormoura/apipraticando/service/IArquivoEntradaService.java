@@ -1,12 +1,12 @@
 package vitormoura.apipraticando.service;
 
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-import vitormoura.apipraticando.service.exception.UpdaloadArquivoException;
+import org.springframework.plugin.core.Plugin;
 
-@Component
-public interface IArquivoEntradaService {
 
-    public void processarArquivoPagamentosPendentes (MultipartFile arquivo);
+public interface IArquivoEntradaService<T,K> extends Plugin<K> {
+
+    void processaArquivo (T object);
+
+    //K getStrategyType();
 
 }

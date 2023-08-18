@@ -50,7 +50,7 @@ public class Handler {
     }
 
     @ExceptionHandler(EmailException.class)
-    public final ResponseEntity<ExceptionResponse> handleEmailException(GerarRelatorioException e, WebRequest request) {
+    public final ResponseEntity<ExceptionResponse> handleEmailException(EmailException e, WebRequest request) {
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse("Erro ao enviar relatório via email", new Date(), e.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);

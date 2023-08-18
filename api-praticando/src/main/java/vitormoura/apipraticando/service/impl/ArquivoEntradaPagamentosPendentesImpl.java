@@ -5,15 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import vitormoura.apipraticando.domain.entities.Pagamento;
+import vitormoura.apipraticando.domain.enums.TipoDeArquivoEntrada;
+import vitormoura.apipraticando.domain.repository.PagamentoRepository;
+import vitormoura.apipraticando.service.IArquivoEntradaService;
+import vitormoura.apipraticando.service.IDiscoLocalService;
 import vitormoura.apipraticando.service.exception.LerArquivoException;
 import vitormoura.apipraticando.service.exception.SalvarRegistrosException;
 import vitormoura.apipraticando.service.exception.UpdaloadArquivoException;
 import vitormoura.apipraticando.service.models.DiscoLocal;
-import vitormoura.apipraticando.domain.entities.Pagamento;
-import vitormoura.apipraticando.domain.enums.TipoDeArquivo;
-import vitormoura.apipraticando.domain.repository.PagamentoRepository;
-import vitormoura.apipraticando.service.IArquivoEntradaService;
-import vitormoura.apipraticando.service.IDiscoLocalService;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ArquivoEntradaService implements IArquivoEntradaService {
+public class ArquivoEntradaPagamentosPendentesImpl implements IArquivoEntradaService<MultipartFile, TipoDeArquivoEntrada>{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ArquivoEntradaService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArquivoEntradaPagamentosPendentesImpl.class);
 
     @Autowired
     IDiscoLocalService iDiscoLocalService;
@@ -33,7 +34,7 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
     private List<Pagamento> listaPagamentosEmAberto;
 
     @Override
-    public void processarArquivoPagamentosPendentes (MultipartFile arquivo) {
+    public void processaArquivo (MultipartFile arquivo) {
         String nomeArquivo = arquivo.getOriginalFilename();
 
             uploadArquivoPagamentosPendentes(arquivo);
@@ -41,13 +42,23 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
             salvarRegistrosPagamentosPendentes(nomeArquivo);
     }
 
+//    @Override
+//    public TipoDeArquivo getStrategyType() {
+//        return TipoDeArquivo.PAGAMENTOS_PENDENTES;
+//    }
+
+    @Override
+    public boolean supports(TipoDeArquivoEntrada tipoDeArquivoEntrada) {
+        return TipoDeArquivoEntrada.PAGAMENTOS_PENDENTES == tipoDeArquivoEntrada;
+    }
+
 
     private void uploadArquivoPagamentosPendentes(MultipartFile arquivo) {
         LOGGER.info("Iniciando o upload do arquivo " + arquivo.getOriginalFilename());
 
         DiscoLocal discoLocal = new DiscoLocal(
-                TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorioRaiz(),
-                TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorio());
+                TipoDeArquivoEntrada.PAGAMENTOS_PENDENTES.getDiretorioRaiz(),
+                TipoDeArquivoEntrada.PAGAMENTOS_PENDENTES.getDiretorio());
 
         try {
             Path caminhoDoArquivo = iDiscoLocalService.criarDiretorio(discoLocal);
@@ -65,8 +76,8 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
 
 
     private void leArquivoPagamentosPendentes(String nomeArquivo) {
-        String caminhoArquivo = TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorioRaiz() + "/"
-                + TipoDeArquivo.PAGAMENTOS_PENDENTES.getDiretorio() + "/" + nomeArquivo;
+        String caminhoArquivo = TipoDeArquivoEntrada.PAGAMENTOS_PENDENTES.getDiretorioRaiz() + "/"
+                + TipoDeArquivoEntrada.PAGAMENTOS_PENDENTES.getDiretorio() + "/" + nomeArquivo;
 
         BufferedReader entrada = null;
         String registro, tiporegistro, nomeCred, chavePix, digitoContaCred;
@@ -164,4 +175,5 @@ public class ArquivoEntradaService implements IArquivoEntradaService {
                     + nomeArquivo + " ==> " + e.getMessage());
         }
    }
+
 }

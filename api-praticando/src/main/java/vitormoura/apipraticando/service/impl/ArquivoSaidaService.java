@@ -9,7 +9,7 @@ import org.webjars.NotFoundException;
 import vitormoura.apipraticando.service.exception.EmailException;
 import vitormoura.apipraticando.service.exception.GerarRelatorioException;
 import vitormoura.apipraticando.service.models.DiscoLocal;
-import vitormoura.apipraticando.domain.enums.TipoDeArquivo;
+import vitormoura.apipraticando.domain.enums.TipoDeArquivoEntrada;
 import vitormoura.apipraticando.service.models.Email;
 import vitormoura.apipraticando.domain.entities.Pagamento;
 import vitormoura.apipraticando.domain.repository.PagamentoRepository;
@@ -64,8 +64,8 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
             throw new NotFoundException("Não existem registros de pagamentos efetuados");
         }
 
-        DiscoLocal discoLocal = new DiscoLocal(TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorioRaiz(),
-                                TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorio());
+        DiscoLocal discoLocal = new DiscoLocal(TipoDeArquivoEntrada.PAGAMENTOS_EFETUADOS.getDiretorioRaiz(),
+                                TipoDeArquivoEntrada.PAGAMENTOS_EFETUADOS.getDiretorio());
 
         String caminhoDiretorio = null;
         try {
@@ -79,8 +79,8 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
         LocalDateTime localDate = LocalDateTime.ofInstant(instant, ZoneOffset.of("-03:00"));
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("_ddMMyyyy_HHmm");
         String localDateFormatado = localDate.format(formatoData);
-        nomeCompletoArquivo = TipoDeArquivo.PAGAMENTOS_EFETUADOS.getNome()  + localDateFormatado +
-                                TipoDeArquivo.PAGAMENTOS_EFETUADOS.getExtensao();
+        nomeCompletoArquivo = TipoDeArquivoEntrada.PAGAMENTOS_EFETUADOS.getNome()  + localDateFormatado +
+                                TipoDeArquivoEntrada.PAGAMENTOS_EFETUADOS.getExtensao();
 
         FileWriter arq = null;
         Formatter saida = null;
@@ -135,8 +135,8 @@ public class ArquivoSaidaService implements IArquivoSaidaService {
 
 
     public void enviarRelatorioPagamentosEfetuados(String enderecoEnvio) throws EmailException {
-        String caminhoDiretorio = TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorioRaiz() + "/"
-                                + TipoDeArquivo.PAGAMENTOS_EFETUADOS.getDiretorio();
+        String caminhoDiretorio = TipoDeArquivoEntrada.PAGAMENTOS_EFETUADOS.getDiretorioRaiz() + "/"
+                                + TipoDeArquivoEntrada.PAGAMENTOS_EFETUADOS.getDiretorio();
 
         LOGGER.info("Criando o email a ser enviado no caminho: " + caminhoDiretorio);
         Email email = new Email();
